@@ -4,32 +4,6 @@ import urllib.request
 import urllib.error
 import ssl
 
-bot = praw.Reddit(user_agent='UWCourseLinker v0.1',
-                      client_id='G_x7prJfvUn_dQ',
-                      client_secret='42eUAnGe2V5BgKbBqgURUsNj0tI',
-                      username='UWCourseLinker',
-                      password='Battlefield1')
-
-subreddit = bot.subreddit('test')
-
-course_code = r'[A-z]{2,4} ?[0-9]{3}'
-
-seen_submissions_file = open("seen_submissions.txt", "r")
-seen_submissions = []
-for line in seen_submissions_file.read().splitlines():
-    seen_submissions.append(line)
-seen_submissions_file.close()
-seen_submissions_file = open("seen_submissions.txt", "a")
-
-seen_comments_file = open("seen_comments.txt", "r")
-seen_comments = []
-for line in seen_comments_file.read().splitlines():
-    seen_comments.append(line)
-seen_comments_file.close()
-seen_comments_file = open("seen_comments.txt", "a")
-
-SELF = "UWCourseLinker"
-
 
 def link_format(text, url):
     return "[" + text + "](" + url + ")"
@@ -68,63 +42,94 @@ def get_course_url(course_code):
     return 'https://uwflow.com/course/' + clean_code
 
 
-while True:
-    try:
-        for submission in subreddit.new(limit=25):
-            if submission.id not in seen_submissions:
-                seen_submissions.append(submission.id)
-                seen_submissions_file.write(submission.id + "\n")
-                codes = re.findall(course_code, submission.title + " " + submission.selftext)
-                if len(codes) > 0:
-                    reply = ""
-                    seen_codes = []
-                    for code in codes:
-                        if code not in seen_codes:
-                            seen_codes.append(code)
-                            try:
-                                url = get_course_url(code)
-                                name = get_course_name(code)
-                                reply += link_format(name, url) + "\n\n"
-                            except Exception as e:
-                                print("Exception:", e)
-                                continue
-                    if reply:
-                        try:
-                            post_comment(submission, add_bot_footer(reply))
-                        except Exception as e:
-                            print("Exception:", e)
+def main():
 
-        for comment in subreddit.comments(limit=50):
-            if comment.author is not None:
-                text = comment.body
-                author = comment.author
-                if str(author.name) != SELF:
-                    codes = re.findall(course_code, text)
+    bot = praw.Reddit(user_agent='UWCourseLinker v0.1',
+                      client_id='G_x7prJfvUn_dQ',
+                      client_secret='42eUAnGe2V5BgKbBqgURUsNj0tI',
+                      username='UWCourseLinker',
+                      password='Battlefield1')
+
+    subreddit = bot.subreddit('test')
+
+    course_code = r'[A-z]{2,4} ?[0-9]{3}'
+
+    seen_submissions_file = open("seen_submissions.txt", "r")
+    seen_submissions = []
+    for line in seen_submissions_file.read().splitlines():
+        seen_submissions.append(line)
+    seen_submissions_file.close()
+    seen_submissions_file = open("seen_submissions.txt", "a")
+
+    seen_comments_file = open("seen_comments.txt", "r")
+    seen_comments = []
+    for line in seen_comments_file.read().splitlines():
+        seen_comments.append(line)
+    seen_comments_file.close()
+    seen_comments_file = open("seen_comments.txt", "a")
+
+    SELF = "UWCourseLinker"
+
+    while True:
+        try:
+            for submission in subreddit.new(limit=25):
+                if submission.id not in seen_submissions:
+                    seen_submissions.append(submission.id)
+                    seen_submissions_file.write(submission.id + "\n")
+                    codes = re.findall(course_code, submission.title + " " + submission.selftext)
                     if len(codes) > 0:
-                        if comment.id not in seen_comments:
-                            seen_comments.append(comment.id)
-                            seen_comments_file.write(comment.id + "\n")
-                            seen_codes = []
-                            reply = ""
-                            for code in codes:
-                                if code not in seen_codes:
-                                    seen_codes.append(code)
-                                    try:
-                                        url = get_course_url(code)
-                                        name = get_course_name(code)
-                                        reply += link_format(name, url) + "\n\n"
-                                    except Exception as e:
-                                        print("Exception:", e)
-                                        continue
-                            if reply:
+                        reply = ""
+                        seen_codes = []
+                        for code in codes:
+                            if code not in seen_codes:
+                                seen_codes.append(code)
                                 try:
-                                    post_comment(comment, add_bot_footer(reply))
+                                    url = get_course_url(code)
+                                    name = get_course_name(code)
+                                    reply += link_format(name, url) + "\n\n"
                                 except Exception as e:
                                     print("Exception:", e)
+                                    continue
+                        if reply:
+                            try:
+                                post_comment(submission, add_bot_footer(reply))
+                            except Exception as e:
+                                print("Exception:", e)
 
-    except KeyboardInterrupt:
-        seen_comments_file.close()
-        seen_submissions_file.close()
-        break
-    except Exception as e:
-        print("Exception:", e)
+            for comment in subreddit.comments(limit=50):
+                if comment.author is not None:
+                    text = comment.body
+                    author = comment.author
+                    if str(author.name) != SELF:
+                        codes = re.findall(course_code, text)
+                        if len(codes) > 0:
+                            if comment.id not in seen_comments:
+                                seen_comments.append(comment.id)
+                                seen_comments_file.write(comment.id + "\n")
+                                seen_codes = []
+                                reply = ""
+                                for code in codes:
+                                    if code not in seen_codes:
+                                        seen_codes.append(code)
+                                        try:
+                                            url = get_course_url(code)
+                                            name = get_course_name(code)
+                                            reply += link_format(name, url) + "\n\n"
+                                        except Exception as e:
+                                            print("Exception:", e)
+                                            continue
+                                if reply:
+                                    try:
+                                        post_comment(comment, add_bot_footer(reply))
+                                    except Exception as e:
+                                        print("Exception:", e)
+
+        except KeyboardInterrupt:
+            seen_comments_file.close()
+            seen_submissions_file.close()
+            break
+        except Exception as e:
+            print("Exception:", e)
+
+if __name__ == "__main__":
+    main()
