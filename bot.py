@@ -10,8 +10,9 @@ def link_format(text, url):
 
 
 def add_bot_footer(text):
-    return text + "\n\n^[FEEDBACK]" \
-           "(https://www.reddit.com/message/compose?to=UWCourseLinker&subject=Feedback)*"
+    return text + "\n\n^[feedback]" \
+           "(https://www.reddit.com/message/compose?to=UWCourseLinker&subject=Feedback)" \
+           " ^| ^[github](https://github.com/mattbonnell/uwcourselinker)"
 
 
 def post_comment(parent, comment):
@@ -50,7 +51,7 @@ def main():
                       username='UWCourseLinker',
                       password='Battlefield1')
 
-    subreddit = bot.subreddit('test')
+    subreddit = bot.subreddit('uwaterloo')
 
     course_code = r'[A-z]{2,4} ?[0-9]{3}'
 
