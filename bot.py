@@ -35,12 +35,15 @@ def get_course_name(course_code):
     return code_proper + " - " + name_proper
 
 
-def get_course_url(course_code):
+def clean_code(course_code):
     clean_code = course_code
     "".join(clean_code.split())
     clean_code = clean_code.replace(" ", "")
-    clean_code = clean_code.lower()
-    return 'https://uwflow.com/course/' + clean_code
+    return clean_code.lower()
+
+def get_course_url(course_code):
+    code = clean_code(course_code)
+    return 'https://uwflow.com/course/' + code
 
 
 def main():
@@ -53,7 +56,7 @@ def main():
 
     subreddit = bot.subreddit('uwaterloo')
 
-    course_code = r'[A-z]{2,4} ?[0-9]{3}'
+    course_code = r'[A-z]{2,5} ?[0-9]{3}[A-z]?'
 
     seen_submissions_file = open("seen_submissions.txt", "r")
     seen_submissions = []
@@ -82,6 +85,7 @@ def main():
                         reply = ""
                         seen_codes = []
                         for code in codes:
+                            code = clean_code(code)
                             if code not in seen_codes:
                                 seen_codes.append(code)
                                 try:
@@ -93,7 +97,7 @@ def main():
                                     continue
                         if reply:
                             try:
-                                post_comment(submission, add_bot_footer(reply))
+                                post_comment(submission, reply)
                             except Exception as e:
                                 print("Exception:", e)
 
@@ -110,6 +114,7 @@ def main():
                                 seen_codes = []
                                 reply = ""
                                 for code in codes:
+                                    code = clean_code(code)
                                     if code not in seen_codes:
                                         seen_codes.append(code)
                                         try:
@@ -121,7 +126,7 @@ def main():
                                             continue
                                 if reply:
                                     try:
-                                        post_comment(comment, add_bot_footer(reply))
+                                        post_comment(comment, reply)
                                     except Exception as e:
                                         print("Exception:", e)
 
