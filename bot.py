@@ -36,7 +36,7 @@ def get_course_name(course_code):
 
 
 def clean_code(course_code):
-    clean_code = course_code
+    clean_code = course_code.strip("[]")
     "".join(clean_code.split())
     clean_code = clean_code.replace(" ", "")
     return clean_code.lower()
@@ -56,7 +56,7 @@ def main():
 
     subreddit = bot.subreddit('uwaterloo')
 
-    course_code = re.compile(r'[A-z]{2,5} ?[0-9]{3}[A-z]?')
+    course_code = re.compile(r'\[\[[A-z]{2,5} ?[0-9]{3}[A-z]?\]\]')
 
     seen_submissions_file = open("seen_submissions.txt", "r")
     seen_submissions = []
