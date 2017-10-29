@@ -56,7 +56,7 @@ def main():
 
     subreddit = bot.subreddit('uwaterloo')
 
-    course_code = r'[A-z]{2,5} ?[0-9]{3}[A-z]?'
+    course_code = re.compile(r'[A-z]{2,5} ?[0-9]{3}[A-z]?')
 
     seen_submissions_file = open("seen_submissions.txt", "r")
     seen_submissions = []
@@ -97,7 +97,7 @@ def main():
                                     continue
                         if reply:
                             try:
-                                post_comment(submission, reply)
+                                post_comment(submission, add_bot_footer(reply))
                             except Exception as e:
                                 print("Exception:", e)
 
@@ -126,7 +126,7 @@ def main():
                                             continue
                                 if reply:
                                     try:
-                                        post_comment(comment, reply)
+                                        post_comment(comment, add_bot_footer(reply))
                                     except Exception as e:
                                         print("Exception:", e)
 
