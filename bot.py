@@ -8,7 +8,7 @@ import ssl
 
 
 def link_format(text, url):
-    return "[" + text + "](" + url + ")"
+    return "[%s](%s)" % (text, url)
 
 
 def add_bot_footer(text):
