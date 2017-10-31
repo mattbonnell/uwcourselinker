@@ -58,10 +58,10 @@ def get_course_url(course_code):
 def main():
 
     bot = praw.Reddit(user_agent='UWCourseLinker v0.1',
-                      client_id='G_x7prJfvUn_dQ',
-                      client_secret='42eUAnGe2V5BgKbBqgURUsNj0tI',
-                      username='UWCourseLinker',
-                      password='QWEiop123890')
+                      client_id='',
+                      client_secret='',
+                      username='',
+                      password='')
 
     subreddit = bot.subreddit('uwaterloo')
 
