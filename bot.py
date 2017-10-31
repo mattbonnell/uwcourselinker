@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import praw
 import re
 import urllib.request
@@ -5,8 +7,17 @@ import urllib.error
 import ssl
 
 
+GROUP_NAME = "course"
+COURSE_CODE_REGEX = "(?P<%s>[a-z]{2,5} ?[0-9]{3}[a-z]?)" % GROUP_NAME
+REGEXES = [
+        r"\[\[ ?%s ?\]\]",
+        r"what is %s",
+        r"what's %s",
+        ]
+
+
 def link_format(text, url):
-    return "[" + text + "](" + url + ")"
+    return "[%s](%s)" % (text, url)
 
 
 def add_bot_footer(text):
@@ -36,10 +47,7 @@ def get_course_name(course_code):
 
 
 def clean_code(course_code):
-    clean_code = course_code.strip("[]")
-    "".join(clean_code.split())
-    clean_code = clean_code.replace(" ", "")
-    return clean_code.lower()
+    return course_code.replace(" ", "").lower()
 
 def get_course_url(course_code):
     code = clean_code(course_code)
@@ -56,7 +64,7 @@ def main():
 
     subreddit = bot.subreddit('uwaterloo')
 
-    course_code = re.compile(r'\[\[[A-z]{2,5} ?[0-9]{3}[A-z]?\]\]')
+    course_regexes = list(map(lambda r: re.compile(r, re.I), map(lambda s: s % COURSE_CODE_REGEX, REGEXES)))
 
     seen_submissions_file = open("seen_submissions.txt", "r")
     seen_submissions = []
@@ -80,7 +88,12 @@ def main():
                 if submission.id not in seen_submissions:
                     seen_submissions.append(submission.id)
                     seen_submissions_file.write(submission.id + "\n")
-                    codes = re.findall(course_code, submission.title + " " + submission.selftext)
+                    codes = []
+
+                    text = submission.title + " " + submission.selftext
+                    for course_regex in course_regexes:
+                        codes += [ m.group(GROUP_NAME) for m in re.finditer(course_regex, text)]
+
                     if len(codes) > 0:
                         reply = ""
                         seen_codes = []
@@ -106,7 +119,11 @@ def main():
                     text = comment.body
                     author = comment.author
                     if str(author.name) != SELF:
-                        codes = re.findall(course_code, text)
+                        codes = []
+
+                        for course_regex in course_regexes:
+                            codes += [ m.group(GROUP_NAME) for m in re.finditer(course_regex, text)]
+
                         if len(codes) > 0:
                             if comment.id not in seen_comments:
                                 seen_comments.append(comment.id)
