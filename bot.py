@@ -22,7 +22,7 @@ def link_format(text, url):
 
 
 def add_bot_footer(text):
-    return text + "\n\n^[feedback]" \
+    return text + "\n\n^[[course ^code]] ^to ^call ^| ^[feedback]" \
            "(https://www.reddit.com/message/compose?to=UWCourseLinker&subject=Feedback)" \
            " ^| ^[github](https://github.com/mattbonnell/uwcourselinker)"
 
