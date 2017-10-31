@@ -59,9 +59,9 @@ def main():
 
     bot = praw.Reddit(user_agent='UWCourseLinker v0.1',
                       client_id='G_x7prJfvUn_dQ',
-                      client_secret='42eUAnGe2V5BgKbBqgURUsNj0tI',
+                      client_secret='XXXXXXXXXX',
                       username='UWCourseLinker',
-                      password='QWEiop123890')
+                      password='XXXXXXXXXXX')
 
     subreddit = bot.subreddit('uwaterloo')
 
