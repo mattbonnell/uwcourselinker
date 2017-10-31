@@ -8,11 +8,8 @@ import ssl
 
 
 GROUP_NAME = "course"
-<<<<<<< HEAD
 COURSE_CODE_REGEX = "(?P<%s>[A-z]{2,5} ?[0-9]{3}[A-z]?)" % GROUP_NAME
-=======
 COURSE_CODE_REGEX = "(?P<%s>[a-z]{2,5} ?[0-9]{3}[a-z]?)" % GROUP_NAME
->>>>>>> 979d400d86569ab998fd3df77d0f2f69e9cad2bc
 REGEXES = [
         r"\[\[ ?%s ?\]\]",
         r"what is %s",
